@@ -6,7 +6,7 @@ void main() => runApp(MyApp());
 
 /// This Widget is the main application widget.
 class MyApp extends StatelessWidget {
-  static const String _title = 'Flutter Code Sample';
+  static const String _title = 'Expense Tracker';
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +32,17 @@ class CategorySelectionScreen extends StatefulWidget {
 
 class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
   Category selectedCategory;
+  String selectedItem;
 
   void setSelectedCategory(Category category) {
     setState(() {
       selectedCategory = category;
+    });
+  }
+
+  void setSelectedItem(String item) {
+    setState(() {
+      selectedItem = item;
     });
   }
 
@@ -129,11 +136,15 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
               ),
             ),
             trailing: Icon(
-              FontAwesomeIcons.solidCheckCircle,
+              selectedItem == items[index]
+                  ? FontAwesomeIcons.solidCheckCircle
+                  : FontAwesomeIcons.circle,
               color: Colors.green,
               size: 32.0,
             ),
-            onTap: () {},
+            onTap: () {
+              setSelectedItem(items[index]);
+            },
           );
         },
         separatorBuilder: (BuildContext context, int index) => const Divider(),
