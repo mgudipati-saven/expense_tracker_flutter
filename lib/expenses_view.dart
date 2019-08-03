@@ -36,13 +36,15 @@ class _ExpensesViewState extends State<ExpensesView> {
                   ),
                 );
 
-                String path = 'users/${widget.uuid}/expenses';
-                CollectionReference ref = _firestore.collection(path);
-                await ref.add({
-                  'item': result,
-                  'amount': 100,
-                  'date': Timestamp.now(),
-                });
+                print('Return value from AddCategoryScreen: $result');
+
+//                String path = 'users/${widget.uuid}/expenses';
+//                CollectionReference ref = _firestore.collection(path);
+//                await ref.add({
+//                  'item': result,
+//                  'amount': 100,
+//                  'date': Timestamp.now(),
+//                });
               },
             ),
           ],

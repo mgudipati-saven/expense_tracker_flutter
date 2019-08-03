@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:expense_tracker_flutter/category.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:expense_tracker_flutter/circular_icon_button.dart';
+import 'package:expense_tracker_flutter/add_expense_screen.dart';
 
 class AddCategoryScreen extends StatefulWidget {
   @override
@@ -48,8 +49,19 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(FontAwesomeIcons.check),
-        onPressed: () {
-          Navigator.pop(context, selectedItem);
+        onPressed: () async {
+          //Navigator.pop(context, selectedItem);
+          final amount = await Navigator.pushReplacement<int, String>(
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext context) => AddExpenseScreen(),
+            ),
+            result: selectedItem,
+          );
+
+          print('Return value from AddExpenseScreen: $amount');
+          print('Selected Item: $selectedItem');
+
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

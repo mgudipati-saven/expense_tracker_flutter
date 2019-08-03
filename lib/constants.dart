@@ -14,5 +14,5 @@ const kTitleTextStyle = TextStyle(
 
 const kNumberTextStyle = TextStyle(
   color: Colors.black54,
-  fontSize: 24.0,
+  fontSize: 32.0,
 );
