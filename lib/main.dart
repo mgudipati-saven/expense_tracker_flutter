@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracker_flutter/expenses_view.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 final GoogleSignIn _googleSignIn = GoogleSignIn();
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
-void main() => runApp(MyApp());
+void main() {
+  _auth.signOut();
+  runApp(MyApp());
+}
 
 /// This Widget is the main application widget.
 class MyApp extends StatelessWidget {
@@ -16,6 +20,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: _title,
+      theme: ThemeData().copyWith(
+        scaffoldBackgroundColor: Color(0xFFEAEEF9),
+        appBarTheme: AppBarTheme(color: Color(0xFF64619C)),
+        floatingActionButtonTheme: FloatingActionButtonThemeData().copyWith(
+          backgroundColor: Color(0xFF5EC4AC),
+        ),
+      ),
       home: _buildLaunchScreen(),
     );
   }
@@ -24,7 +35,6 @@ class MyApp extends StatelessWidget {
     return StreamBuilder<FirebaseUser>(
       stream: _auth.onAuthStateChanged,
       builder: (BuildContext context, AsyncSnapshot<FirebaseUser> snapshot) {
-        print(snapshot);
         if (snapshot.hasData) return ExpensesView(uuid: snapshot.data.email,);
         return AuthScreen();
       },
@@ -43,7 +53,6 @@ class AuthScreen extends StatelessWidget {
     );
 
     final FirebaseUser user = (await _auth.signInWithCredential(credential)).user;
-    print("signed in " + user.displayName);
     return user;
   }
 
@@ -51,24 +60,40 @@ class AuthScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Login')),
-      body: Center(child: RaisedButton(
-        child: Text('Google Sign In'),
-        onPressed: () async {
-          try {
-            FirebaseUser user = await handleSignIn();
-            if (user != null) {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => ExpensesView(uuid: user.email,)
-                  ),
-              );
+      body: Center(
+        child: FlatButton.icon(
+          padding: EdgeInsets.all(12.0),
+          color: Colors.red,
+          textColor: Colors.white,
+          icon: Icon(FontAwesomeIcons.google),
+          label: Text(
+            'Sign in with Google',
+            style: TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.w400
+            ),
+          ),
+          shape: RoundedRectangleBorder(
+            side: BorderSide(color: Colors.white),
+            borderRadius: BorderRadius.circular(30.0),
+          ),
+          onPressed: () async {
+            try {
+              FirebaseUser user = await handleSignIn();
+//              if (user != null) {
+//                Navigator.push(
+//                  context,
+//                  MaterialPageRoute(
+//                      builder: (BuildContext context) => ExpensesView(uuid: user.email,)
+//                  ),
+//                );
+//              }
+            } catch (e) {
+              print(e);
             }
-          } catch (e) {
-            print(e);
-          }
-        },
-      ),),
+          },
+        ),
+      ),
     );
   }
 }

@@ -20,48 +20,40 @@ class _ExpensesViewState extends State<ExpensesView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(title: Text('Expenses')),
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            _buildBody(context),
-            FloatingActionButton(
-              child: Icon(FontAwesomeIcons.plus),
-              onPressed: () async {
-                final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (BuildContext context) => AddCategoryScreen(),
-                  ),
-                );
-
-                print('Return value from AddCategoryScreen: $result');
-
-//                String path = 'users/${widget.uuid}/expenses';
-//                CollectionReference ref = _firestore.collection(path);
-//                await ref.add({
-//                  'item': result,
-//                  'amount': 100,
-//                  'date': Timestamp.now(),
-//                });
-              },
-            ),
-          ],
-        ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          _buildBody(context),
+        ],
       ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(FontAwesomeIcons.plus),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext context) => AddCategoryScreen(),
+            ),
+          );
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
   Widget _buildBody(BuildContext context) {
-    print('${widget.uuid}');
     return Flexible(
       child: StreamBuilder<QuerySnapshot>(
-        stream: _firestore.collection('users')
-            .document('${widget.uuid}').collection('expenses').snapshots(),
+        stream: _firestore
+            .collection('users')
+            .document('${widget.uuid}')
+            .collection('expenses')
+            .orderBy('date', descending: true)
+            .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) return LinearProgressIndicator();
-          print(snapshot);
           return ListView.separated(
             padding: const EdgeInsets.all(8.0),
             itemCount: snapshot.data.documents.length,

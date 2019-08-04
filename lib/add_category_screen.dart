@@ -1,8 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_tracker_flutter/category.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:expense_tracker_flutter/circular_icon_button.dart';
 import 'package:expense_tracker_flutter/add_expense_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddCategoryScreen extends StatefulWidget {
   @override
@@ -10,6 +12,9 @@ class AddCategoryScreen extends StatefulWidget {
 }
 
 class _AddCategoryScreenState extends State<AddCategoryScreen> {
+  final Firestore _firestore = Firestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   Category selectedCategory;
   String selectedItem;
 
@@ -29,39 +34,49 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
   void initState() {
     super.initState();
     setSelectedCategory(Category.personal);
+    setSelectedItem(null);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Add Category')),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              buildCategorySelectionPanel(),
-              Expanded(child: buildItemSelectionList(),),
-            ],
-          ),
+      body: Card(
+        margin: EdgeInsets.symmetric(vertical: 32.0, horizontal: 10.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            buildCategorySelectionPanel(),
+            Expanded(child: buildItemSelectionList(),),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(FontAwesomeIcons.check),
-        onPressed: () async {
-          //Navigator.pop(context, selectedItem);
-          final amount = await Navigator.pushReplacement<int, String>(
-            context,
-            MaterialPageRoute(
-              builder: (BuildContext context) => AddExpenseScreen(),
-            ),
-            result: selectedItem,
-          );
+        onPressed: selectedItem == null
+          ? null
+          : () async {
+            final int amount = await Navigator.push<int>(
+              context,
+              MaterialPageRoute(
+                builder: (BuildContext context) => Center(child: AddExpenseScreen()),
+              ),
+            );
 
-          print('Return value from AddExpenseScreen: $amount');
-          print('Selected Item: $selectedItem');
+            print('Return value from AddExpenseScreen: $amount');
+            print('Selected Item: $selectedItem');
 
+            if (amount != null && selectedItem != null) {
+              Navigator.pop(context);
+              final user = await _auth.currentUser();
+              String path = 'users/${user.email}/expenses';
+              CollectionReference ref = _firestore.collection(path);
+              await ref.add({
+                'item': selectedItem,
+                'amount': amount,
+                'date': Timestamp.now(),
+              });
+            }
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -69,53 +84,51 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
   }
 
   Widget buildCategorySelectionPanel() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Category.personal,
-                Category.food,
-                Category.home,
-                Category.bills,
-              ].map((Category category) {
-                return CircularIconButton(
-                  icon: category.icon,
-                  color: category.color,
-                  label: category.name,
-                  isSelected: category == selectedCategory,
-                  onTap: () {
-                    setSelectedCategory(category);
-                  },
-                );
-              }).toList(),
-            ),
-            SizedBox(height: 10.0,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Category.cloth,
-                Category.fun,
-                Category.transport,
-                Category.misc
-              ].map((Category category) {
-                return CircularIconButton(
-                  icon: category.icon,
-                  color: category.color,
-                  label: category.name,
-                  isSelected: category == selectedCategory,
-                  onTap: () {
-                    setSelectedCategory(category);
-                  },
-                );
-              }).toList(),
-            ),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Category.personal,
+              Category.food,
+              Category.home,
+              Category.bills,
+            ].map((Category category) {
+              return CircularIconButton(
+                icon: category.icon,
+                color: category.color,
+                label: category.name,
+                isSelected: category == selectedCategory,
+                onTap: () {
+                  setSelectedCategory(category);
+                },
+              );
+            }).toList(),
+          ),
+          SizedBox(height: 10.0,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Category.cloth,
+              Category.fun,
+              Category.transport,
+              Category.misc
+            ].map((Category category) {
+              return CircularIconButton(
+                icon: category.icon,
+                color: category.color,
+                label: category.name,
+                isSelected: category == selectedCategory,
+                onTap: () {
+                  setSelectedCategory(category);
+                },
+              );
+            }).toList(),
+          ),
+        ],
       ),
     );
   }
@@ -123,7 +136,8 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
   Widget buildItemSelectionList() {
     final List<String> items = selectedCategory.items;
 
-    return Card(
+    return Container(
+      color: Color(0xFFFAFBFD),
       child: ListView.separated(
         padding: const EdgeInsets.all(8.0),
         itemCount: items.length,

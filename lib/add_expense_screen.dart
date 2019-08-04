@@ -16,9 +16,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       appBar: AppBar(
         title: Text('Add Expense'),
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
+      body: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Card(
+          margin: EdgeInsets.symmetric(vertical: 32.0, horizontal: 10.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
@@ -102,7 +103,11 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       floatingActionButton: FloatingActionButton(
         child: Icon(FontAwesomeIcons.check),
         onPressed: () {
-          Navigator.pop(context, 100);
+          try {
+            Navigator.pop(context, int.parse(amount));
+          } catch (e) {
+            print(e);
+          }
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
