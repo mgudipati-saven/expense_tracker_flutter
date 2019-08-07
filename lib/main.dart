@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
     return StreamBuilder<FirebaseUser>(
       stream: _auth.onAuthStateChanged,
       builder: (BuildContext context, AsyncSnapshot<FirebaseUser> snapshot) {
-        if (snapshot.hasData) return ExpensesView(uuid: snapshot.data.email,);
+        if (snapshot.hasData) return ExpensesView(user: snapshot.data);
         return AuthScreen();
       },
     );

@@ -1,4 +1,6 @@
 import 'package:expense_tracker_flutter/add_expense_screen.dart';
+import 'package:expense_tracker_flutter/add_income_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -10,9 +12,9 @@ import 'package:expense_tracker_flutter/rounded_button.dart';
 import 'package:expense_tracker_flutter/expense.dart';
 
 class ExpensesView extends StatefulWidget {
-  ExpensesView({this.uuid});
+  ExpensesView({this.user});
 
-  final String uuid;
+  final FirebaseUser user;
 
   @override
   _ExpensesViewState createState() => _ExpensesViewState();
@@ -20,6 +22,8 @@ class ExpensesView extends StatefulWidget {
 
 class _ExpensesViewState extends State<ExpensesView> {
   final Firestore _firestore = Firestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   DateTime selectedDate, today;
   Stream<QuerySnapshot> _stream;
 
@@ -36,7 +40,7 @@ class _ExpensesViewState extends State<ExpensesView> {
       selectedDate = date;
       _stream = _firestore
         .collection('users')
-        .document('${widget.uuid}')
+        .document('${widget.user.email}')
         .collection('expenses')
         .where('date', isEqualTo: Timestamp.fromDate(date))
         .snapshots();
@@ -47,6 +51,44 @@ class _ExpensesViewState extends State<ExpensesView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      drawer: Drawer(
+        child: Container(
+          color: Color(0xFF5EC4AC),
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              UserAccountsDrawerHeader(
+                accountName: Text(widget.user.displayName),
+                accountEmail: Text(widget.user.email),
+                currentAccountPicture: CircleAvatar(
+                  backgroundImage: NetworkImage(widget.user.photoUrl),
+                ),
+              ),
+              ListTile(
+                leading: Icon(FontAwesomeIcons.moneyCheckAlt, color: Colors.white),
+                title: Text('Income', style: TextStyle(color: Colors.white, fontSize: 18.0),),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => AddIncomeScreen(),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: Icon(FontAwesomeIcons.signOutAlt, color: Colors.white,),
+                title: Text('Logout', style: TextStyle(color: Colors.white, fontSize: 18.0),),
+                onTap: () {
+                  _auth.signOut();
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
       appBar: AppBar(
         title: Text(
           'Total Balance',
@@ -74,7 +116,7 @@ class _ExpensesViewState extends State<ExpensesView> {
           );
 
           if (expense != null) {
-            String path = 'users/${widget.uuid}/expenses';
+            String path = 'users/${widget.user.email}/expenses';
             CollectionReference collectionReference = _firestore.collection(path);
             await collectionReference.add({
               'item': expense.item,
@@ -83,7 +125,7 @@ class _ExpensesViewState extends State<ExpensesView> {
             });
 
             // Update Total Balance.
-            path = 'users/${widget.uuid}';
+            path = 'users/${widget.user.email}';
             DocumentReference documentReference = _firestore.document(path);
             DocumentSnapshot doc = await documentReference.get();
             int balance = doc.data['balance'];
@@ -136,7 +178,7 @@ class _ExpensesViewState extends State<ExpensesView> {
     Widget balanceAmountText = StreamBuilder(
       stream: _firestore
           .collection('users')
-          .document('${widget.uuid}')
+          .document('${widget.user.email}')
           .snapshots(),
       builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (!snapshot.hasData) return Text('...');
