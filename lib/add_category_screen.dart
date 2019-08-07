@@ -33,7 +33,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
   @override
   void initState() {
     super.initState();
-    setSelectedCategory(Category.personal);
+    setSelectedCategory(Category('personal'));
     setSelectedItem(null);
   }
 
@@ -98,10 +98,10 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Category.personal,
-              Category.food,
-              Category.home,
-              Category.bills,
+              Category('personal'),
+              Category('food'),
+              Category('home'),
+              Category('bills'),
             ].map((Category category) {
               return CircularIconButton(
                 icon: category.icon,
@@ -118,10 +118,10 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Category.cloth,
-              Category.fun,
-              Category.transport,
-              Category.misc
+              Category('cloth'),
+              Category('fun'),
+              Category('transport'),
+              Category('misc')
             ].map((Category category) {
               return CircularIconButton(
                 icon: category.icon,

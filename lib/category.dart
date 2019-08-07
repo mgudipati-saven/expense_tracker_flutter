@@ -2,50 +2,50 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Category {
-  static const Map<String, Category> _categoriesMap = {
-    'personal': Category(
+  static final Map<String, Category> _dict = {
+    'personal': Category._internal(
       name: 'Personal',
       color: Colors.blue,
       icon: FontAwesomeIcons.user,
       items: ['Mobile', 'Medicine', 'Others'],
     ),
-    'food': Category(
+    'food': Category._internal(
       name: 'Food',
       color: Colors.green,
       icon: FontAwesomeIcons.utensils,
       items: ['Restaurant', 'Pizza', 'Others'],
     ),
-    'home': Category(
+    'home': Category._internal(
       name: 'Home',
       color: Colors.yellow,
       icon: FontAwesomeIcons.home,
       items: ['Furniture', 'Repairs', 'Others'],
     ),
-    'fun': Category(
+    'fun': Category._internal(
       name: 'Fun',
       color: Colors.red,
       icon: FontAwesomeIcons.cocktail,
       items: ['Nightclub', 'Games', 'Cinema', 'Others'],
     ),
-    'bills': Category(
+    'bills': Category._internal(
       name: 'Bills',
       color: Colors.lightGreen,
       icon: FontAwesomeIcons.receipt,
       items: ['Telephone', 'Utilities', 'Electricity', 'Credit Card', 'Others'],
     ),
-    'transport': Category(
+    'transport': Category._internal(
       name: 'Transport',
       color: Colors.purple,
       icon: FontAwesomeIcons.car,
       items: ['Cab', 'Taxi', 'Bus', 'Train', 'Others'],
     ),
-    'cloth': Category(
+    'cloth': Category._internal(
       name: 'Cloth',
       color: Colors.brown,
       icon: FontAwesomeIcons.tshirt,
       items: ['Shirts', 'Dresses', 'Shoes', 'Others'],
     ),
-    'misc': Category(
+    'misc': Category._internal(
       name: 'Misc',
       color: Colors.black,
       icon: FontAwesomeIcons.gift,
@@ -53,63 +53,15 @@ class Category {
     ),
   };
 
-  static const Category food = Category(
-    name: 'Food',
-    color: Colors.green,
-    icon: FontAwesomeIcons.utensils,
-    items: ['Restaurant', 'Pizza', 'Others'],
-  );
+  factory Category(String name) {
+    if (_dict.containsKey(name)) {
+      return _dict[name];
+    } else {
+      return null;
+    }
+  }
 
-  static const Category personal = Category(
-    name: 'Personal',
-    color: Colors.blue,
-    icon: FontAwesomeIcons.user,
-    items: ['Mobile', 'Medicine', 'Others'],
-  );
-
-  static const Category home = Category(
-    name: 'Home',
-    color: Colors.yellow,
-    icon: FontAwesomeIcons.home,
-    items: ['Furniture', 'Repairs', 'Others'],
-  );
-
-  static const Category fun = Category(
-    name: 'Fun',
-    color: Colors.red,
-    icon: FontAwesomeIcons.cocktail,
-    items: ['Nightclub', 'Games', 'Cinema', 'Others'],
-  );
-
-  static const Category bills = Category(
-    name: 'Bills',
-    color: Colors.lightGreen,
-    icon: FontAwesomeIcons.receipt,
-    items: ['Telephone', 'Utilities', 'Electricity', 'Credit Card', 'Others'],
-  );
-
-  static const Category transport = Category(
-    name: 'Transport',
-    color: Colors.purple,
-    icon: FontAwesomeIcons.car,
-    items: ['Cab', 'Taxi', 'Bus', 'Train', 'Others'],
-  );
-
-  static const Category cloth = Category(
-    name: 'Cloth',
-    color: Colors.brown,
-    icon: FontAwesomeIcons.tshirt,
-    items: ['Shirts', 'Dresses', 'Shoes', 'Others'],
-  );
-
-  static const Category misc = Category(
-    name: 'Misc',
-    color: Colors.black,
-    icon: FontAwesomeIcons.gift,
-    items: ['Charity', 'Donation', 'Lost', 'Others'],
-  );
-
-  const Category({
+  Category._internal({
     @required this.name,
     @required this.color,
     @required this.icon,
@@ -124,7 +76,7 @@ class Category {
   static Category getCategory(String itemName) {
     Category result;
 
-    _categoriesMap.forEach((name, category) {
+    _dict.forEach((name, category) {
       category.items.forEach((item) {
         if (item == itemName) {
           result = category;

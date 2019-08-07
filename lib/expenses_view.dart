@@ -140,7 +140,6 @@ class _ExpensesViewState extends State<ExpensesView> {
             .collection('users')
             .document('${widget.uuid}')
             .collection('expenses')
-            .where('date', isEqualTo: )
             .orderBy('date', descending: true)
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
