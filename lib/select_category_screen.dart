@@ -1,20 +1,15 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:expense_tracker_flutter/category.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:expense_tracker_flutter/circular_icon_button.dart';
-import 'package:expense_tracker_flutter/add_expense_screen.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
-class AddCategoryScreen extends StatefulWidget {
+import 'package:expense_tracker_flutter/category.dart';
+import 'package:expense_tracker_flutter/circular_icon_button.dart';
+
+class SelectCategoryScreen extends StatefulWidget {
   @override
-  _AddCategoryScreenState createState() => _AddCategoryScreenState();
+  _SelectCategoryScreenState createState() => _SelectCategoryScreenState();
 }
 
-class _AddCategoryScreenState extends State<AddCategoryScreen> {
-  final Firestore _firestore = Firestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
+class _SelectCategoryScreenState extends State<SelectCategoryScreen> {
   Category selectedCategory;
   String selectedItem;
 
@@ -55,35 +50,9 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
         child: Icon(FontAwesomeIcons.check),
         onPressed: selectedItem == null
           ? null
-          : () async {
-            final int amount = await Navigator.push<int>(
-              context,
-              MaterialPageRoute(
-                builder: (BuildContext context) => Center(child: AddExpenseScreen()),
-              ),
-            );
-
-            if (amount != null && selectedItem != null) {
-              Navigator.pop(context);
-              final user = await _auth.currentUser();
-              String path = 'users/${user.email}/expenses';
-              CollectionReference collectionReference = _firestore.collection(path);
-              await collectionReference.add({
-                'item': selectedItem,
-                'amount': amount,
-                'date': Timestamp.now(),
-              });
-
-              // Update Total Balance.
-              path = 'users/${user.email}';
-              DocumentReference documentReference = _firestore.document(path);
-              DocumentSnapshot doc = await documentReference.get();
-              int balance = doc.data['balance'];
-              await documentReference.updateData({
-                'balance': (balance - amount),
-              });
-            }
-        },
+          : () {
+            Navigator.pop(context, selectedItem);
+          },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );

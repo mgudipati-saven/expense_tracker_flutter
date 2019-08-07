@@ -1,11 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:expense_tracker_flutter/add_category_screen.dart';
-import 'package:expense_tracker_flutter/category.dart';
+import 'package:expense_tracker_flutter/add_expense_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:expense_tracker_flutter/constants.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:expense_tracker_flutter/rounded_button.dart';
 import 'package:intl/intl.dart';
+
+import 'package:expense_tracker_flutter/select_category_screen.dart';
+import 'package:expense_tracker_flutter/category.dart';
+import 'package:expense_tracker_flutter/constants.dart';
+import 'package:expense_tracker_flutter/rounded_button.dart';
+import 'package:expense_tracker_flutter/expense.dart';
 
 class ExpensesView extends StatefulWidget {
   ExpensesView({this.uuid});
@@ -49,13 +52,32 @@ class _ExpensesViewState extends State<ExpensesView> {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(FontAwesomeIcons.plus),
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          Expense expense = await Navigator.push<Expense>(
             context,
             MaterialPageRoute(
-              builder: (BuildContext context) => AddCategoryScreen(),
+              builder: (BuildContext context) => AddExpenseScreen(),
             ),
           );
+
+          if (expense != null) {
+            String path = 'users/${widget.uuid}/expenses';
+            CollectionReference collectionReference = _firestore.collection(path);
+            await collectionReference.add({
+              'item': expense.item,
+              'amount': expense.amount,
+              'date': Timestamp.now(),
+            });
+
+            // Update Total Balance.
+            path = 'users/${widget.uuid}';
+            DocumentReference documentReference = _firestore.document(path);
+            DocumentSnapshot doc = await documentReference.get();
+            int balance = doc.data['balance'];
+            await documentReference.updateData({
+              'balance': (balance - expense.amount),
+            });
+          }
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

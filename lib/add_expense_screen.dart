@@ -1,3 +1,5 @@
+import 'package:expense_tracker_flutter/select_category_screen.dart';
+import 'package:expense_tracker_flutter/expense.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:expense_tracker_flutter/constants.dart';
@@ -101,9 +103,19 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(FontAwesomeIcons.check),
-        onPressed: () {
+        onPressed: () async {
           try {
-            Navigator.pop(context, int.parse(amount));
+            final String item = await Navigator.push<String>(
+              context,
+              MaterialPageRoute(
+                builder: (BuildContext context) => Center(child: SelectCategoryScreen()),
+              ),
+            );
+
+            if (item != null) {
+              Expense expense = Expense(item: item, amount: int.parse(amount));
+              Navigator.pop(context, expense);
+            }
           } catch (e) {
             print(e);
           }
