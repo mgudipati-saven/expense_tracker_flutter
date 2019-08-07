@@ -4,6 +4,8 @@ import 'package:expense_tracker_flutter/category.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_tracker_flutter/constants.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:expense_tracker_flutter/rounded_button.dart';
+import 'package:intl/intl.dart';
 
 class ExpensesView extends StatefulWidget {
   ExpensesView({this.uuid});
@@ -16,16 +18,33 @@ class ExpensesView extends StatefulWidget {
 
 class _ExpensesViewState extends State<ExpensesView> {
   final Firestore _firestore = Firestore.instance;
+  DateTime selectedDate, today;
+
+  @override
+  void initState() {
+    super.initState();
+    DateTime date = DateTime.now();
+    today = selectedDate = DateTime(date.year, date.month, date.day);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(title: Text('Expenses')),
+      appBar: AppBar(
+        title: Text(
+          'Total Balance',
+          style: TextStyle(
+            fontWeight: FontWeight.normal
+          ),
+        ),
+        bottom: _buildAppBarBottom(),
+      ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          _buildBody(context),
+          _buildButtonsRow(),
+          _buildListView(context),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -43,13 +62,85 @@ class _ExpensesViewState extends State<ExpensesView> {
     );
   }
 
-  Widget _buildBody(BuildContext context) {
+  Widget _buildButtonsRow() {
+    DateTime todayMinus1 = today.subtract(Duration(days: 1));
+    DateTime todayMinus2 = today.subtract(Duration(days: 2));
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          new RoundedButton(
+            text: DateFormat("EEE").format(todayMinus2),
+            selected: selectedDate == todayMinus2 ? true : false,
+            onTap: () {
+              setState(() {
+                selectedDate = todayMinus2;
+              });
+            },
+          ),
+          new RoundedButton(
+            text: DateFormat("EEE").format(todayMinus1),
+            selected: selectedDate == todayMinus1 ? true : false,
+            onTap: () {
+              setState(() {
+                selectedDate = todayMinus1;
+              });
+            },
+          ),
+          new RoundedButton(
+            text: 'Today',
+            selected: selectedDate == today ? true : false,
+            onTap: () {
+              setState(() {
+                selectedDate = today;
+              });
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  PreferredSize _buildAppBarBottom() {
+    Widget balanceAmountText = StreamBuilder(
+      stream: _firestore
+          .collection('users')
+          .document('${widget.uuid}')
+          .snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        if (!snapshot.hasData) return Text('...');
+        snapshot.data.data.forEach((key, value) {
+        });
+        return Text(
+          snapshot.data['balance'].toString(),
+          style: TextStyle(
+            fontSize: 28.0,
+            color: Colors.white,
+            fontWeight: FontWeight.w600
+          ),
+        );
+      },
+    );
+
+    return PreferredSize(
+      preferredSize: Size.fromHeight(20.0),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 8.0),
+        child: balanceAmountText,
+      ),
+    );
+  }
+
+  Widget _buildListView(BuildContext context) {
     return Flexible(
       child: StreamBuilder<QuerySnapshot>(
         stream: _firestore
             .collection('users')
             .document('${widget.uuid}')
             .collection('expenses')
+            .where('date', isEqualTo: )
             .orderBy('date', descending: true)
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {

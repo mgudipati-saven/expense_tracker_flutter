@@ -63,18 +63,24 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
               ),
             );
 
-            print('Return value from AddExpenseScreen: $amount');
-            print('Selected Item: $selectedItem');
-
             if (amount != null && selectedItem != null) {
               Navigator.pop(context);
               final user = await _auth.currentUser();
               String path = 'users/${user.email}/expenses';
-              CollectionReference ref = _firestore.collection(path);
-              await ref.add({
+              CollectionReference collectionReference = _firestore.collection(path);
+              await collectionReference.add({
                 'item': selectedItem,
                 'amount': amount,
                 'date': Timestamp.now(),
+              });
+
+              // Update Total Balance.
+              path = 'users/${user.email}';
+              DocumentReference documentReference = _firestore.document(path);
+              DocumentSnapshot doc = await documentReference.get();
+              int balance = doc.data['balance'];
+              await documentReference.updateData({
+                'balance': (balance - amount),
               });
             }
         },

@@ -42,21 +42,6 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: IconButton(
-                        icon: Icon(FontAwesomeIcons.backspace, size: 32.0,),
-                        color: Colors.grey,
-                        onPressed: () {
-                          setState(() {
-                            amount = amount.substring(0, amount.length-1);
-                            if (amount.isEmpty) {
-                              amount = '0';
-                            }
-                          });
-                        },
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -89,11 +74,25 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               ),
               Divider(),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
-                  _buildKeypadButton(','),
-                  SizedBox(),
+                  Expanded(child: SizedBox()),
                   _buildKeypadButton('0'),
+                  Expanded(
+                    child: IconButton(
+                      iconSize: 32.0,
+                      icon: Icon(FontAwesomeIcons.backspace,),
+                      color: Colors.grey,
+                      onPressed: () {
+                        setState(() {
+                          amount = amount.substring(0, amount.length-1);
+                          if (amount.isEmpty) {
+                            amount = '0';
+                          }
+                        });
+                      },
+                    ),
+                  ),
                 ],
               ),
             ],

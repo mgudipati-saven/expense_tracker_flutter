@@ -8,7 +8,6 @@ final GoogleSignIn _googleSignIn = GoogleSignIn();
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 void main() {
-  _auth.signOut();
   runApp(MyApp());
 }
 
