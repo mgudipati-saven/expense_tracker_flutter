@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
-import 'package:expense_tracker_flutter/select_category_screen.dart';
 import 'package:expense_tracker_flutter/category.dart';
 import 'package:expense_tracker_flutter/constants.dart';
 import 'package:expense_tracker_flutter/rounded_button.dart';
@@ -22,12 +21,26 @@ class ExpensesView extends StatefulWidget {
 class _ExpensesViewState extends State<ExpensesView> {
   final Firestore _firestore = Firestore.instance;
   DateTime selectedDate, today;
+  Stream<QuerySnapshot> _stream;
 
   @override
   void initState() {
     super.initState();
     DateTime date = DateTime.now();
-    today = selectedDate = DateTime(date.year, date.month, date.day);
+    today = DateTime(date.year, date.month, date.day);
+    setSelectedDate(today);
+  }
+
+  void setSelectedDate(DateTime date) {
+    setState(() {
+      selectedDate = date;
+      _stream = _firestore
+        .collection('users')
+        .document('${widget.uuid}')
+        .collection('expenses')
+        .where('date', isEqualTo: Timestamp.fromDate(date))
+        .snapshots();
+    });
   }
 
   @override
@@ -66,7 +79,7 @@ class _ExpensesViewState extends State<ExpensesView> {
             await collectionReference.add({
               'item': expense.item,
               'amount': expense.amount,
-              'date': Timestamp.now(),
+              'date': Timestamp.fromDate(selectedDate),
             });
 
             // Update Total Balance.
@@ -97,27 +110,21 @@ class _ExpensesViewState extends State<ExpensesView> {
             text: DateFormat("EEE").format(todayMinus2),
             selected: selectedDate == todayMinus2 ? true : false,
             onTap: () {
-              setState(() {
-                selectedDate = todayMinus2;
-              });
+              setSelectedDate(todayMinus2);
             },
           ),
           new RoundedButton(
             text: DateFormat("EEE").format(todayMinus1),
             selected: selectedDate == todayMinus1 ? true : false,
             onTap: () {
-              setState(() {
-                selectedDate = todayMinus1;
-              });
+              setSelectedDate(todayMinus1);
             },
           ),
           new RoundedButton(
             text: 'Today',
             selected: selectedDate == today ? true : false,
             onTap: () {
-              setState(() {
-                selectedDate = today;
-              });
+              setSelectedDate(today);
             },
           ),
         ],
@@ -158,12 +165,7 @@ class _ExpensesViewState extends State<ExpensesView> {
   Widget _buildListView(BuildContext context) {
     return Flexible(
       child: StreamBuilder<QuerySnapshot>(
-        stream: _firestore
-            .collection('users')
-            .document('${widget.uuid}')
-            .collection('expenses')
-            .orderBy('date', descending: true)
-            .snapshots(),
+        stream: _stream,
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) return LinearProgressIndicator();
           return ListView.separated(
