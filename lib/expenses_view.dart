@@ -143,33 +143,36 @@ class _ExpensesViewState extends State<ExpensesView> {
     DateTime todayMinus1 = today.subtract(Duration(days: 1));
     DateTime todayMinus2 = today.subtract(Duration(days: 2));
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          new RoundedButton(
-            text: DateFormat("EEE").format(todayMinus2),
-            selected: selectedDate == todayMinus2 ? true : false,
-            onTap: () {
-              setSelectedDate(todayMinus2);
-            },
-          ),
-          new RoundedButton(
-            text: DateFormat("EEE").format(todayMinus1),
-            selected: selectedDate == todayMinus1 ? true : false,
-            onTap: () {
-              setSelectedDate(todayMinus1);
-            },
-          ),
-          new RoundedButton(
-            text: 'Today',
-            selected: selectedDate == today ? true : false,
-            onTap: () {
-              setSelectedDate(today);
-            },
-          ),
-        ],
+    return Container(
+      color: Color(0xFFF3F7FF),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            new RoundedButton(
+              text: DateFormat("EEE").format(todayMinus2),
+              selected: selectedDate == todayMinus2 ? true : false,
+              onTap: () {
+                setSelectedDate(todayMinus2);
+              },
+            ),
+            new RoundedButton(
+              text: DateFormat("EEE").format(todayMinus1),
+              selected: selectedDate == todayMinus1 ? true : false,
+              onTap: () {
+                setSelectedDate(todayMinus1);
+              },
+            ),
+            new RoundedButton(
+              text: 'Today',
+              selected: selectedDate == today ? true : false,
+              onTap: () {
+                setSelectedDate(today);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -185,7 +188,7 @@ class _ExpensesViewState extends State<ExpensesView> {
         snapshot.data.data.forEach((key, value) {
         });
         return Text(
-          snapshot.data['balance'].toString(),
+          '\$ ${snapshot.data['balance']}',
           style: TextStyle(
             fontSize: 28.0,
             color: Colors.white,

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "328753391017",
+    "firebase_url": "https://expense-tracker-3c60d.firebaseio.com",
+    "project_id": "expense-tracker-3c60d",
+    "storage_bucket": "expense-tracker-3c60d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:328753391017:android:b53fc97994e27faa",
+        "android_client_info": {
+          "package_name": "com.mgudipati.expense_tracker_flutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "328753391017-iu8be6h1ufluj9j8njhoi3vgq07prm35.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mgudipati.expense_tracker_flutter",
+            "certificate_hash": "e4c3b6d475e3782512dca7bd0b06734bad569a98"
+          }
+        },
+        {
+          "client_id": "328753391017-lkcd2j9uf7g2dtuo9veceg3o75o493hg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgbwcWp5AzcVKxyuuO7yNfnDhUhWrqmt8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "328753391017-lkcd2j9uf7g2dtuo9veceg3o75o493hg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "328753391017-96thoo51bpu3h8ehd83qdogqcjm0en7g.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mgudipati.expenseTrackerFlutter"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
