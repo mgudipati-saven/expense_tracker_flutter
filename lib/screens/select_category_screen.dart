@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 import 'package:expense_tracker_flutter/models/category.dart';
 import 'package:expense_tracker_flutter/widgets/circular_icon_button.dart';
@@ -10,10 +11,11 @@ class SelectCategoryScreen extends StatefulWidget {
 }
 
 class _SelectCategoryScreenState extends State<SelectCategoryScreen> {
-  Category selectedCategory;
+  String selectedCategory;
   String selectedItem;
+  var categories;
 
-  void setSelectedCategory(Category category) {
+  void setSelectedCategory(String category) {
     setState(() {
       selectedCategory = category;
     });
@@ -28,12 +30,14 @@ class _SelectCategoryScreenState extends State<SelectCategoryScreen> {
   @override
   void initState() {
     super.initState();
-    setSelectedCategory(Category('personal'));
+    setSelectedCategory('Personal');
     setSelectedItem(null);
   }
 
   @override
   Widget build(BuildContext context) {
+    categories = Provider.of<List<Category>>(context);
+
     return Scaffold(
       appBar: AppBar(title: Text('Add Category')),
       body: Card(
@@ -41,8 +45,8 @@ class _SelectCategoryScreenState extends State<SelectCategoryScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            buildCategorySelectionPanel(),
-            Expanded(child: buildItemSelectionList(),),
+            Expanded(flex: 1, child: buildCategorySelectionGrid(categories)),
+            Expanded(flex: 2, child: buildItemSelectionList(),),
           ],
         ),
       ),
@@ -51,65 +55,93 @@ class _SelectCategoryScreenState extends State<SelectCategoryScreen> {
         onPressed: selectedItem == null
           ? null
           : () {
-            Navigator.pop(context, selectedItem);
+            Navigator.pop(context, [selectedItem, selectedCategory]);
           },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
-  Widget buildCategorySelectionPanel() {
+
+  Widget buildCategorySelectionGrid(List<Category> categories) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Category('personal'),
-              Category('food'),
-              Category('home'),
-              Category('bills'),
-            ].map((Category category) {
-              return CircularIconButton(
-                icon: category.icon,
-                color: category.color,
-                label: category.name,
-                isSelected: category == selectedCategory,
-                onTap: () {
-                  setSelectedCategory(category);
-                },
-              );
-            }).toList(),
-          ),
-          SizedBox(height: 10.0,),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Category('cloth'),
-              Category('fun'),
-              Category('transport'),
-              Category('misc')
-            ].map((Category category) {
-              return CircularIconButton(
-                icon: category.icon,
-                color: category.color,
-                label: category.name,
-                isSelected: category == selectedCategory,
-                onTap: () {
-                  setSelectedCategory(category);
-                },
-              );
-            }).toList(),
-          ),
-        ],
+      child: GridView.count(
+        crossAxisCount: 2,
+        scrollDirection: Axis.horizontal,
+        childAspectRatio: 1.12,
+        children: categories.map((Category category) {
+          return CircularIconButton(
+            icon: category.icon,
+            color: category.color,
+            label: category.name,
+            isSelected: category.name == selectedCategory,
+            onTap: () {
+              setSelectedCategory(category.name);
+            },
+          );
+        }).toList(),
       ),
     );
   }
 
+//  Widget buildCategorySelectionPanel() {
+//    return Padding(
+//      padding: const EdgeInsets.symmetric(vertical: 8.0),
+//      child: Column(
+//        mainAxisAlignment: MainAxisAlignment.start,
+//        children: <Widget>[
+//          Row(
+//            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//            children: [
+//              Category('personal'),
+//              Category('food'),
+//              Category('home'),
+//              Category('bills'),
+//            ].map((Category category) {
+//              return CircularIconButton(
+//                icon: category.icon,
+//                color: category.color,
+//                label: category.name,
+//                isSelected: category == selectedCategory,
+//                onTap: () {
+//                  setSelectedCategory(category);
+//                },
+//              );
+//            }).toList(),
+//          ),
+//          SizedBox(height: 10.0,),
+//          Row(
+//            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//            children: [
+//              Category('cloth'),
+//              Category('fun'),
+//              Category('transport'),
+//              Category('misc')
+//            ].map((Category category) {
+//              return CircularIconButton(
+//                icon: category.icon,
+//                color: category.color,
+//                label: category.name,
+//                isSelected: category == selectedCategory,
+//                onTap: () {
+//                  setSelectedCategory(category);
+//                },
+//              );
+//            }).toList(),
+//          ),
+//        ],
+//      ),
+//    );
+//  }
+
   Widget buildItemSelectionList() {
-    final List<String> items = selectedCategory.items;
+    List<dynamic> items = [];
+    for (Category category in categories) {
+      if (category.id == selectedCategory) {
+        items = category.items;
+      }
+    }
 
     return Container(
       color: Color(0xFFFAFBFD),

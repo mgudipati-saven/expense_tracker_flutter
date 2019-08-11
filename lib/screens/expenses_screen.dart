@@ -200,34 +200,33 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             padding: const EdgeInsets.all(8.0),
             itemCount: snapshot.data.documents.length,
             itemBuilder: (BuildContext context, int index) {
-              final DocumentSnapshot expense = snapshot.data.documents[index];
-              Category category = Category.getCategory(expense['item']);
+              final Expense expense = Expense.fromFirestore(snapshot.data.documents[index]);
               return ListTile(
                 leading: Container(
                   padding: EdgeInsets.all(14.0),
                   decoration: ShapeDecoration(
                     shape: CircleBorder(
                       side: BorderSide(
-                        color: category.color,
+                        color: Category.getColor(expense.category),
                         width: 2.0
                       ),
                     ),
                   ),
                   child: Icon(
-                    category.icon,
+                    Category.getIcon(expense.category),
                     size: 26.0,
                   ),
                 ),
                 title: Text(
-                  category.name,
+                  expense.category,
                   style: kTitleTextStyle,
                 ),
                 subtitle: Text(
-                  expense['item'],
+                  expense.item,
                   style: kSubtitleTextStyle,
                 ),
                 trailing: Text(
-                  '\$${expense['amount'].round()}',
+                  '\$${expense.amount.round()}',
                   style: kNumberTextStyle,
                 ),
               );

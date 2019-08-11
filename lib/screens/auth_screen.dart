@@ -44,15 +44,7 @@ class AuthScreen extends StatelessWidget {
           ),
           onPressed: () async {
             try {
-              FirebaseUser user = await handleSignIn();
-//              if (user != null) {
-//                Navigator.push(
-//                  context,
-//                  MaterialPageRoute(
-//                      builder: (BuildContext context) => ExpensesView(uuid: user.email,)
-//                  ),
-//                );
-//              }
+              await handleSignIn();
             } catch (e) {
               print(e);
             }

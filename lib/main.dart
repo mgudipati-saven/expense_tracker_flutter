@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
 import 'package:expense_tracker_flutter/screens/auth_screen.dart';
 import 'package:expense_tracker_flutter/screens/expenses_screen.dart';
-
-final GoogleSignIn _googleSignIn = GoogleSignIn();
-final FirebaseAuth _auth = FirebaseAuth.instance;
+import 'package:expense_tracker_flutter/models/category.dart';
+import 'package:expense_tracker_flutter/services/db.dart';
 
 void main() {
   runApp(MyApp());
@@ -17,6 +14,7 @@ void main() {
 /// This Widget is the main application widget.
 class MyApp extends StatelessWidget {
   static const String _title = 'Expense Tracker';
+  final db = DatabaseService();
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +22,9 @@ class MyApp extends StatelessWidget {
       providers: [
         StreamProvider<FirebaseUser>.value(
           value: FirebaseAuth.instance.onAuthStateChanged,
+        ),
+        StreamProvider<List<Category>>.value(
+          value: db.streamCategories(),
         ),
       ],
       child: MaterialApp(
@@ -39,16 +40,6 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
-
-//  Widget _buildLaunchScreen() {
-//    return StreamBuilder<FirebaseUser>(
-//      stream: _auth.onAuthStateChanged,
-//      builder: (BuildContext context, AsyncSnapshot<FirebaseUser> snapshot) {
-//        if (snapshot.hasData) return ExpensesScreen(user: snapshot.data);
-//        return AuthScreen();
-//      },
-//    );
-//  }
 }
 
 class HomeScreen extends StatelessWidget {

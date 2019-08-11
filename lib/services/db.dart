@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
+
 import 'package:expense_tracker_flutter/models/expense.dart';
+import 'package:expense_tracker_flutter/models/category.dart';
 
 class DatabaseService {
   final Firestore _db = Firestore.instance;
@@ -21,11 +23,20 @@ class DatabaseService {
         .snapshots();
   }
 
+  Stream<List<Category>> streamCategories() {
+    return _db
+        .collection('categories')
+        .snapshots()
+        .map((list) => list.documents.map((doc) => Category.fromFirestore(doc))
+        .toList());
+  }
+
   Future<void> addExpense(String id, Expense expense) {
     var ref = _db.collection('users').document(id).collection('expenses');
 
     return ref.add({
       'item': expense.item,
+      'category': expense.category,
       'amount': expense.amount,
       'date': Timestamp.fromDate(expense.date),
     });
@@ -37,7 +48,7 @@ class DatabaseService {
     return doc.data['balance'];
   }
 
-  Future<void> updateBalance(String id, int amount) async {
+  Future<void> updateBalance(String id, int amount) {
     var ref = _db.collection('users').document(id);
     return ref.updateData({
       'balance': amount,

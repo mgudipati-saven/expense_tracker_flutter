@@ -109,15 +109,20 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
         child: Icon(FontAwesomeIcons.check),
         onPressed: () async {
           try {
-            final String item = await Navigator.push<String>(
+            final List<String> result = await Navigator.push<List<String>>(
               context,
               MaterialPageRoute(
                 builder: (BuildContext context) => Center(child: SelectCategoryScreen()),
               ),
             );
 
-            if (item != null) {
-              Expense expense = Expense(item: item, amount: int.parse(amount), date: widget.date);
+            if (result != null) {
+              Expense expense = Expense(
+                item: result[0],
+                category: result[1],
+                amount: int.parse(amount),
+                date: widget.date
+              );
               Navigator.pop(context, expense);
             }
           } catch (e) {
