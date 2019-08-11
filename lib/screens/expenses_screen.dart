@@ -1,26 +1,26 @@
-import 'package:expense_tracker_flutter/add_expense_screen.dart';
-import 'package:expense_tracker_flutter/add_income_screen.dart';
+import 'package:expense_tracker_flutter/screens/add_expense_screen.dart';
+import 'package:expense_tracker_flutter/screens/add_income_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
-import 'package:expense_tracker_flutter/category.dart';
+import 'package:expense_tracker_flutter/models/category.dart';
 import 'package:expense_tracker_flutter/constants.dart';
-import 'package:expense_tracker_flutter/rounded_button.dart';
-import 'package:expense_tracker_flutter/expense.dart';
+import 'package:expense_tracker_flutter/widgets/rounded_button.dart';
+import 'package:expense_tracker_flutter/models/expense.dart';
 
-class ExpensesView extends StatefulWidget {
-  ExpensesView({this.user});
+class ExpensesScreen extends StatefulWidget {
+  ExpensesScreen({this.user});
 
   final FirebaseUser user;
 
   @override
-  _ExpensesViewState createState() => _ExpensesViewState();
+  _ExpensesScreenState createState() => _ExpensesScreenState();
 }
 
-class _ExpensesViewState extends State<ExpensesView> {
+class _ExpensesScreenState extends State<ExpensesScreen> {
   final Firestore _firestore = Firestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 

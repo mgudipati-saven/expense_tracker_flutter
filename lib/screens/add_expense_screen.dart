@@ -1,5 +1,5 @@
-import 'package:expense_tracker_flutter/select_category_screen.dart';
-import 'package:expense_tracker_flutter/expense.dart';
+import 'package:expense_tracker_flutter/screens/select_category_screen.dart';
+import 'package:expense_tracker_flutter/models/expense.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:expense_tracker_flutter/constants.dart';

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'package:expense_tracker_flutter/category.dart';
-import 'package:expense_tracker_flutter/circular_icon_button.dart';
+import 'package:expense_tracker_flutter/models/category.dart';
+import 'package:expense_tracker_flutter/widgets/circular_icon_button.dart';
 
 class SelectCategoryScreen extends StatefulWidget {
   @override
