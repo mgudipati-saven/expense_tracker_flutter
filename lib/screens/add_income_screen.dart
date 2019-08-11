@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 
 import 'package:expense_tracker_flutter/constants.dart';
+import 'package:expense_tracker_flutter/services/db.dart';
 
 class AddIncomeScreen extends StatefulWidget {
   @override
@@ -11,13 +12,14 @@ class AddIncomeScreen extends StatefulWidget {
 }
 
 class _AddIncomeScreenState extends State<AddIncomeScreen> {
-  final Firestore _firestore = Firestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final db = DatabaseService();
 
   String amount = '0';
 
   @override
   Widget build(BuildContext context) {
+    FirebaseUser user = Provider.of<FirebaseUser>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Income'),
@@ -109,17 +111,10 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
         child: Icon(FontAwesomeIcons.check),
         onPressed: () async {
           try {
-            FirebaseUser user = await _auth.currentUser();
-
             if (user != null) {
               // Update Total Balance.
-              String path = 'users/${user.email}';
-              DocumentReference documentReference = _firestore.document(path);
-              DocumentSnapshot doc = await documentReference.get();
-              int balance = doc.data['balance'];
-              await documentReference.updateData({
-                'balance': (balance + int.parse(amount)),
-              });
+              int balance = await db.getBalance(user.email);
+              await db.updateBalance(user.email, balance + int.parse(amount));
             }
 
             Navigator.pop(context);

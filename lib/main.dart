@@ -55,7 +55,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     FirebaseUser user = Provider.of<FirebaseUser>(context);
-    return user == null ? AuthScreen() : ExpensesScreen(user: user);
+    return user == null ? AuthScreen() : ExpensesScreen();
   }
 }
 

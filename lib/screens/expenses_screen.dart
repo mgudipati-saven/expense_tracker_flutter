@@ -5,25 +5,24 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import 'package:expense_tracker_flutter/models/category.dart';
 import 'package:expense_tracker_flutter/constants.dart';
 import 'package:expense_tracker_flutter/widgets/rounded_button.dart';
 import 'package:expense_tracker_flutter/models/expense.dart';
+import 'package:expense_tracker_flutter/services/db.dart';
 
 class ExpensesScreen extends StatefulWidget {
-  ExpensesScreen({this.user});
-
-  final FirebaseUser user;
-
   @override
   _ExpensesScreenState createState() => _ExpensesScreenState();
 }
 
 class _ExpensesScreenState extends State<ExpensesScreen> {
-  final Firestore _firestore = Firestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final db = DatabaseService();
 
+  FirebaseUser user;
   DateTime selectedDate, today;
   Stream<QuerySnapshot> _stream;
 
@@ -31,24 +30,21 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   void initState() {
     super.initState();
     DateTime date = DateTime.now();
-    today = DateTime(date.year, date.month, date.day);
-    setSelectedDate(today);
+    selectedDate = today = DateTime(date.year, date.month, date.day);
   }
 
   void setSelectedDate(DateTime date) {
     setState(() {
       selectedDate = date;
-      _stream = _firestore
-        .collection('users')
-        .document('${widget.user.email}')
-        .collection('expenses')
-        .where('date', isEqualTo: Timestamp.fromDate(date))
-        .snapshots();
+      _stream = db.streamExpenses('${user.email}', date);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    user = Provider.of<FirebaseUser>(context);
+    _stream = db.streamExpenses('${user.email}', selectedDate);
+
     return Scaffold(
       backgroundColor: Colors.white,
       drawer: Drawer(
@@ -58,10 +54,10 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             padding: EdgeInsets.zero,
             children: <Widget>[
               UserAccountsDrawerHeader(
-                accountName: Text(widget.user.displayName),
-                accountEmail: Text(widget.user.email),
+                accountName: Text(user.displayName),
+                accountEmail: Text(user.email),
                 currentAccountPicture: CircleAvatar(
-                  backgroundImage: NetworkImage(widget.user.photoUrl),
+                  backgroundImage: NetworkImage(user.photoUrl),
                 ),
               ),
               ListTile(
@@ -96,7 +92,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             fontWeight: FontWeight.normal
           ),
         ),
-        bottom: _buildAppBarBottom(),
+        bottom: _buildAppBarBottom(user),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -111,27 +107,17 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           Expense expense = await Navigator.push<Expense>(
             context,
             MaterialPageRoute(
-              builder: (BuildContext context) => AddExpenseScreen(),
+              builder: (BuildContext context) => AddExpenseScreen(date: selectedDate),
             ),
           );
 
           if (expense != null) {
-            String path = 'users/${widget.user.email}/expenses';
-            CollectionReference collectionReference = _firestore.collection(path);
-            await collectionReference.add({
-              'item': expense.item,
-              'amount': expense.amount,
-              'date': Timestamp.fromDate(selectedDate),
-            });
+            // Add the expense
+            await db.addExpense(user.email, expense);
 
             // Update Total Balance.
-            path = 'users/${widget.user.email}';
-            DocumentReference documentReference = _firestore.document(path);
-            DocumentSnapshot doc = await documentReference.get();
-            int balance = doc.data['balance'];
-            await documentReference.updateData({
-              'balance': (balance - expense.amount),
-            });
+            int balance = await db.getBalance(user.email);
+            await db.updateBalance(user.email, balance - expense.amount);
           }
         },
       ),
@@ -177,12 +163,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     );
   }
 
-  PreferredSize _buildAppBarBottom() {
+  PreferredSize _buildAppBarBottom(FirebaseUser user) {
     Widget balanceAmountText = StreamBuilder(
-      stream: _firestore
-          .collection('users')
-          .document('${widget.user.email}')
-          .snapshots(),
+        stream: db.streamUser('${user.email}'),
       builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (!snapshot.hasData) return Text('...');
         snapshot.data.data.forEach((key, value) {

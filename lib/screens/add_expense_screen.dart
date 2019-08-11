@@ -5,6 +5,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:expense_tracker_flutter/constants.dart';
 
 class AddExpenseScreen extends StatefulWidget {
+  AddExpenseScreen({this.date});
+
+  final DateTime date;
+
   @override
   _AddExpenseScreenState createState() => _AddExpenseScreenState();
 }
@@ -113,7 +117,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             );
 
             if (item != null) {
-              Expense expense = Expense(item: item, amount: int.parse(amount));
+              Expense expense = Expense(item: item, amount: int.parse(amount), date: widget.date);
               Navigator.pop(context, expense);
             }
           } catch (e) {
