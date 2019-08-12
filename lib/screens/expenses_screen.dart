@@ -23,19 +23,26 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   final db = DatabaseService();
 
   FirebaseUser user;
-  DateTime selectedDate, today;
+  DateTime selectedMonth;
   Stream<QuerySnapshot> _stream;
 
   @override
   void initState() {
     super.initState();
     DateTime date = DateTime.now();
-    selectedDate = today = DateTime(date.year, date.month, date.day);
+    selectedMonth = DateTime(date.year, date.month, 1);
+  }
+
+  void setSelectedMonth(DateTime date) {
+    setState(() {
+      selectedMonth = date;
+      _stream = db.streamMonthlyExpenses('${user.email}', date);
+    });
   }
 
   void setSelectedDate(DateTime date) {
     setState(() {
-      selectedDate = date;
+      selectedMonth = date;
       _stream = db.streamExpenses('${user.email}', date);
     });
   }
@@ -43,7 +50,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   @override
   Widget build(BuildContext context) {
     user = Provider.of<FirebaseUser>(context);
-    _stream = db.streamExpenses('${user.email}', selectedDate);
+    _stream = db.streamMonthlyExpenses('${user.email}', selectedMonth);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -107,7 +114,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           Expense expense = await Navigator.push<Expense>(
             context,
             MaterialPageRoute(
-              builder: (BuildContext context) => AddExpenseScreen(date: selectedDate),
+              builder: (BuildContext context) => AddExpenseScreen(date: selectedMonth),
             ),
           );
 
@@ -126,8 +133,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   }
 
   Widget _buildButtonsRow() {
-    DateTime todayMinus1 = today.subtract(Duration(days: 1));
-    DateTime todayMinus2 = today.subtract(Duration(days: 2));
+    DateTime today = DateTime.now();
+    DateTime currentMonth = DateTime(today.year, today.month, 1);
+    DateTime previousMonth = DateTime(today.year, today.month - 1, 1);
 
     return Container(
       color: Color(0xFFF3F7FF),
@@ -137,24 +145,17 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             new RoundedButton(
-              text: DateFormat("EEE").format(todayMinus2),
-              selected: selectedDate == todayMinus2 ? true : false,
+              text: DateFormat("MMM").format(previousMonth),
+              selected: selectedMonth == previousMonth ? true : false,
               onTap: () {
-                setSelectedDate(todayMinus2);
+                setSelectedMonth(previousMonth);
               },
             ),
             new RoundedButton(
-              text: DateFormat("EEE").format(todayMinus1),
-              selected: selectedDate == todayMinus1 ? true : false,
+              text: DateFormat("MMM").format(currentMonth),
+              selected: selectedMonth == currentMonth ? true : false,
               onTap: () {
-                setSelectedDate(todayMinus1);
-              },
-            ),
-            new RoundedButton(
-              text: 'Today',
-              selected: selectedDate == today ? true : false,
-              onTap: () {
-                setSelectedDate(today);
+                setSelectedMonth(currentMonth);
               },
             ),
           ],

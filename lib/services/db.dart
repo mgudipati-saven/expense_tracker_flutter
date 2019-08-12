@@ -14,12 +14,26 @@ class DatabaseService {
         .snapshots();
   }
 
+  Stream<QuerySnapshot> streamMonthlyExpenses(String id, DateTime month) {
+    DateTime start = month;
+    DateTime end = DateTime(start.year, start.month + 1, 1);
+
+    return _db
+        .collection('users')
+        .document(id)
+        .collection('expenses')
+        .orderBy('date', descending: true)
+        .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
+        .where('date', isLessThan: Timestamp.fromDate(end))
+        .snapshots();
+  }
+
   Stream<QuerySnapshot> streamExpenses(String id, DateTime date) {
     return _db
         .collection('users')
         .document(id)
         .collection('expenses')
-        .where('date', isEqualTo: Timestamp.fromDate(date))
+        .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(date))
         .snapshots();
   }
 
