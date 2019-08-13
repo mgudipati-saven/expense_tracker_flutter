@@ -198,7 +198,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) return LinearProgressIndicator();
           return ListView.separated(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.zero,
             itemCount: snapshot.data.documents.length,
             itemBuilder: (BuildContext context, int index) {
               final Expense expense = Expense.fromFirestore(snapshot.data.documents[index]);
@@ -228,11 +228,11 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                 ),
                 trailing: Text(
                   '\$${expense.amount.round()}',
-                  style: kNumberTextStyle,
+                  style: kAmountTextStyle,
                 ),
               );
             },
-            separatorBuilder: (BuildContext context, int index) => const Divider(),
+            separatorBuilder: (BuildContext context, int index) => const Divider(height: 4.0,),
           );
         },
       ),

@@ -45,8 +45,8 @@ class _SelectCategoryScreenState extends State<SelectCategoryScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Expanded(flex: 1, child: buildCategorySelectionGrid(categories)),
-            Expanded(flex: 2, child: buildItemSelectionList(),),
+            buildCategorySelectionPanel(categories),
+            Expanded(child: buildItemSelectionList(),),
           ],
         ),
       ),
@@ -85,55 +85,45 @@ class _SelectCategoryScreenState extends State<SelectCategoryScreen> {
     );
   }
 
-//  Widget buildCategorySelectionPanel() {
-//    return Padding(
-//      padding: const EdgeInsets.symmetric(vertical: 8.0),
-//      child: Column(
-//        mainAxisAlignment: MainAxisAlignment.start,
-//        children: <Widget>[
-//          Row(
-//            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//            children: [
-//              Category('personal'),
-//              Category('food'),
-//              Category('home'),
-//              Category('bills'),
-//            ].map((Category category) {
-//              return CircularIconButton(
-//                icon: category.icon,
-//                color: category.color,
-//                label: category.name,
-//                isSelected: category == selectedCategory,
-//                onTap: () {
-//                  setSelectedCategory(category);
-//                },
-//              );
-//            }).toList(),
-//          ),
-//          SizedBox(height: 10.0,),
-//          Row(
-//            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//            children: [
-//              Category('cloth'),
-//              Category('fun'),
-//              Category('transport'),
-//              Category('misc')
-//            ].map((Category category) {
-//              return CircularIconButton(
-//                icon: category.icon,
-//                color: category.color,
-//                label: category.name,
-//                isSelected: category == selectedCategory,
-//                onTap: () {
-//                  setSelectedCategory(category);
-//                },
-//              );
-//            }).toList(),
-//          ),
-//        ],
-//      ),
-//    );
-//  }
+  Widget buildCategorySelectionPanel(List<Category> categories) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: categories.sublist(0, 4).map((Category category) {
+              return CircularIconButton(
+                icon: category.icon,
+                color: category.color,
+                label: category.name,
+                isSelected: category.name == selectedCategory,
+                onTap: () {
+                  setSelectedCategory(category.name);
+                },
+              );
+            }).toList(),
+          ),
+          SizedBox(height: 10.0,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: categories.sublist(4).map((Category category) {
+              return CircularIconButton(
+                icon: category.icon,
+                color: category.color,
+                label: category.name,
+                isSelected: category.name == selectedCategory,
+                onTap: () {
+                  setSelectedCategory(category.name);
+                },
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget buildItemSelectionList() {
     List<dynamic> items = [];

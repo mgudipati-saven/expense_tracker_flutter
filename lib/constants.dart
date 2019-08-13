@@ -16,3 +16,8 @@ const kNumberTextStyle = TextStyle(
   color: Colors.black54,
   fontSize: 32.0,
 );
+
+const kAmountTextStyle = TextStyle(
+  color: Colors.black54,
+  fontSize: 26.0,
+);
