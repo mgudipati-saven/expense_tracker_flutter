@@ -14,8 +14,8 @@ class DatabaseService {
         .snapshots();
   }
 
-  Stream<QuerySnapshot> streamMonthlyExpenses(String id, DateTime month) {
-    DateTime start = month;
+  Stream<QuerySnapshot> streamMonthlyExpenses(String id, DateTime date) {
+    DateTime start = DateTime(date.year, date.month, 1);
     DateTime end = DateTime(start.year, start.month + 1, 1);
 
     return _db

@@ -23,34 +23,26 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   final db = DatabaseService();
 
   FirebaseUser user;
-  DateTime selectedMonth;
+  DateTime selectedDate, currentDate;
   Stream<QuerySnapshot> _stream;
 
   @override
   void initState() {
     super.initState();
-    DateTime date = DateTime.now();
-    selectedMonth = DateTime(date.year, date.month, 1);
-  }
-
-  void setSelectedMonth(DateTime date) {
-    setState(() {
-      selectedMonth = date;
-      _stream = db.streamMonthlyExpenses('${user.email}', date);
-    });
+    selectedDate = currentDate = DateTime.now();
   }
 
   void setSelectedDate(DateTime date) {
     setState(() {
-      selectedMonth = date;
-      _stream = db.streamExpenses('${user.email}', date);
+      selectedDate = date;
+      _stream = db.streamMonthlyExpenses('${user.email}', date);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     user = Provider.of<FirebaseUser>(context);
-    _stream = db.streamMonthlyExpenses('${user.email}', selectedMonth);
+    _stream = db.streamMonthlyExpenses('${user.email}', selectedDate);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -114,7 +106,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           Expense expense = await Navigator.push<Expense>(
             context,
             MaterialPageRoute(
-              builder: (BuildContext context) => AddExpenseScreen(date: selectedMonth),
+              builder: (BuildContext context) => AddExpenseScreen(date: selectedDate),
             ),
           );
 
@@ -132,10 +124,15 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     );
   }
 
+  DateTime updateMonth(DateTime date, int month) {
+    return DateTime(
+        date.year, month, date.day, date.hour,
+        date.minute, date.second, date.millisecond, date.microsecond);
+  }
+
   Widget _buildButtonsRow() {
-    DateTime today = DateTime.now();
-    DateTime currentMonth = DateTime(today.year, today.month, 1);
-    DateTime previousMonth = DateTime(today.year, today.month - 1, 1);
+    DateTime currentMonth = currentDate;
+    DateTime previousMonth = updateMonth(currentMonth, currentMonth.month - 1);
 
     return Container(
       color: Color(0xFFF3F7FF),
@@ -146,16 +143,16 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           children: <Widget>[
             new RoundedButton(
               text: DateFormat("MMM").format(previousMonth),
-              selected: selectedMonth == previousMonth ? true : false,
+              selected: selectedDate == previousMonth ? true : false,
               onTap: () {
-                setSelectedMonth(previousMonth);
+                setSelectedDate(previousMonth);
               },
             ),
             new RoundedButton(
               text: DateFormat("MMM").format(currentMonth),
-              selected: selectedMonth == currentMonth ? true : false,
+              selected: selectedDate == currentMonth ? true : false,
               onTap: () {
-                setSelectedMonth(currentMonth);
+                setSelectedDate(currentMonth);
               },
             ),
           ],
