@@ -106,7 +106,10 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           Expense expense = await Navigator.push<Expense>(
             context,
             MaterialPageRoute(
-              builder: (BuildContext context) => AddExpenseScreen(date: selectedDate),
+              builder: (BuildContext context) => AddExpenseScreen(
+                // update the month to be the selected month
+                date: updateMonth(DateTime.now(), selectedDate.month)
+              ),
             ),
           );
 
