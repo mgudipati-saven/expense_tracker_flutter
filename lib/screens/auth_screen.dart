@@ -30,6 +30,7 @@ class AuthScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Expanded(
+              flex: 2,
               child: Container(
                 decoration: BoxDecoration(
                   color: Color(0xFFFCEAE8),
@@ -40,6 +41,7 @@ class AuthScreen extends StatelessWidget {
               ),
             ),
             Expanded(
+              flex: 3,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
                 child: Column(
@@ -70,8 +72,8 @@ class AuthScreen extends StatelessWidget {
                         child: TextFormField(
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.fromLTRB(24.0, 12.0, 8.0, 8.0),
-                            hintText: 'Username',
-                            suffixIcon: Icon(FontAwesomeIcons.user, color: Colors.red),
+                            hintText: 'Password',
+                            suffixIcon: Icon(FontAwesomeIcons.key, color: Colors.red),
                             border: InputBorder.none,
                           ),
                         ),
