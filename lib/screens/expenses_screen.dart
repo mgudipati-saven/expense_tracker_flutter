@@ -47,42 +47,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       drawer: Drawer(
-        child: Container(
-          color: Color(0xFF5EC4AC),
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              UserAccountsDrawerHeader(
-                accountName: Text(user.displayName),
-                accountEmail: Text(user.email),
-                currentAccountPicture: CircleAvatar(
-                  backgroundImage: NetworkImage(user.photoUrl),
-                ),
-              ),
-              ListTile(
-                leading: Icon(FontAwesomeIcons.moneyCheckAlt, color: Colors.white),
-                title: Text('Income', style: TextStyle(color: Colors.white, fontSize: 18.0),),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (BuildContext context) => AddIncomeScreen(),
-                    ),
-                  );
-                },
-              ),
-              ListTile(
-                leading: Icon(FontAwesomeIcons.signOutAlt, color: Colors.white,),
-                title: Text('Logout', style: TextStyle(color: Colors.white, fontSize: 18.0),),
-                onTap: () {
-                  _auth.signOut();
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-        ),
+        child: _buildDrawer1(),
       ),
       appBar: AppBar(
         title: Text(
@@ -131,6 +96,84 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     return DateTime(
         date.year, month, date.day, date.hour,
         date.minute, date.second, date.millisecond, date.microsecond);
+  }
+
+  Widget _buildDrawer() {
+    return Stack(
+      alignment: Alignment.topCenter,
+      children: <Widget>[
+        Positioned(
+          child: Container(
+            height: 200,
+            decoration: BoxDecoration(
+              color: Color(0xFFFCEAE8),
+              borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(32.0), bottomRight: Radius.circular(30.0)),
+            ),
+            child: Image.asset('images/logo.png')
+          ),
+        ),
+        Positioned(
+          top: 150,
+          child: Container(
+            height: 100.0,
+            width: 100.0,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: Color(0xFF622798), width: 4.0),
+            ),
+            child: CircleAvatar(
+              backgroundImage: NetworkImage(user.photoUrl),
+            ),
+          ),
+        ),
+        Positioned(
+          top: 250,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text(
+              user.displayName,
+              style: TextStyle(
+                fontSize: 24.0,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          top: 300,
+          left: 10.0,
+          right: 10.0,
+          child: ListView(
+            padding: EdgeInsets.zero,
+            shrinkWrap: true,
+            children: <Widget>[
+              ListTile(
+                leading: Icon(FontAwesomeIcons.moneyCheckAlt, color: Color(0xFF622798)),
+                title: Text('Income', style: TextStyle(fontSize: 18.0),),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => AddIncomeScreen(),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: Icon(FontAwesomeIcons.signOutAlt, color: Color(0xFF622798),),
+                title: Text('Logout', style: TextStyle(fontSize: 18.0),),
+                onTap: () {
+                  _auth.signOut();
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildButtonsRow() {
