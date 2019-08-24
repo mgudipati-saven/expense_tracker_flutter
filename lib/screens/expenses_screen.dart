@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 import 'package:expense_tracker_flutter/models/category.dart';
 import 'package:expense_tracker_flutter/constants.dart';
@@ -47,7 +48,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       drawer: Drawer(
-        child: _buildDrawer1(),
+        child: _buildDrawer(),
       ),
       appBar: AppBar(
         title: Text(
@@ -62,6 +63,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           _buildButtonsRow(),
+          _buildPieChart(),
           _buildListView(context),
         ],
       ),
@@ -96,6 +98,62 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     return DateTime(
         date.year, month, date.day, date.hour,
         date.minute, date.second, date.millisecond, date.microsecond);
+  }
+
+  Widget _buildPieChart() {
+    final section1 = PieChartSectionData(
+      color: Color(0xff0293ee),
+      value: 40,
+      title: "40%",
+      radius: 30,
+      titleStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xffffffff)),
+    );
+
+    final section2 = PieChartSectionData(
+      color: Color(0xfff8b250),
+      value: 30,
+      title: "30%",
+      radius: 30,
+      titleStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xffffffff)),
+    );
+
+    final section3 = PieChartSectionData(
+      color: Color(0xff845bef),
+      value: 15,
+      title: "15%",
+      radius: 30,
+      titleStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xffffffff)),
+    );
+
+    final section4 = PieChartSectionData(
+      color: Color(0xff13d38e),
+      value: 15,
+      title: "15%",
+      radius: 30,
+      titleStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xffffffff)),
+    );
+
+    final items = [
+      section1,
+      section2,
+      section3,
+      section4,
+    ];
+
+    return AspectRatio(
+      aspectRatio: 2,
+      child: Container(
+        child: FlChart(
+          chart: PieChart(
+            PieChartData(
+              sections: items,
+              borderData: FlBorderData(show: false),
+              centerSpaceRadius: 40,
+            )
+          )
+        ),
+      ),
+    );
   }
 
   Widget _buildDrawer() {
